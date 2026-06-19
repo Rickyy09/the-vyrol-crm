@@ -6,14 +6,14 @@ import { DailyTracker } from "./DailyTracker";
 import { Button } from "@/components/ui/button";
 import { CallCompletedModal } from "./CallCompletedModal";
 
-const nav = [
+const nav: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/pipeline", label: "Pipeline", icon: Columns3 },
   { to: "/calendar", label: "Calendar", icon: Calendar },
   { to: "/save-lead", label: "Save Lead", icon: UserPlus },
   { to: "/archive", label: "Archive", icon: Archive },
   { to: "/settings", label: "Settings", icon: Settings },
-] as const;
+];
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
