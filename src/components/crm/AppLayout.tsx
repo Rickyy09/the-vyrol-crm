@@ -34,7 +34,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             return (
               <Link
                 key={item.to}
-                to={item.to}
+                to={item.to as never}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
                     ? "gradient-brand text-white glow-brand"
@@ -72,7 +72,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 return (
                   <Link
                     key={item.to}
-                    to={item.to}
+                    to={item.to as never}
                     onClick={() => setMobileOpen(false)}
                     className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                       active ? "gradient-brand text-white" : "text-muted-foreground hover:bg-accent"
@@ -124,7 +124,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           return (
             <Link
               key={item.to}
-              to={item.to}
+              to={item.to as never}
               className={`flex flex-col items-center gap-0.5 py-2 text-[10px] font-medium ${
                 active ? "text-primary" : "text-muted-foreground"
               }`}
