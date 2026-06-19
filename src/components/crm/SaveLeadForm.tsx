@@ -50,7 +50,6 @@ export function SaveLeadForm({
     const parsed = parseGmbLink(gmbLink);
     setForm((f) => ({
       ...f,
-      ...parsed,
       business_name: parsed.business_name ?? f.business_name,
       google_maps_url: gmbLink,
     }));
