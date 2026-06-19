@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,13 +35,14 @@ export function LeadDetail({
   const [callResult, setCallResult] = useState<CallResult>("no_answer");
   const [callNotes, setCallNotes] = useState("");
 
-  // Sync when lead loads
-  if (lead && notes === "" && lead.notes !== notes && leadId !== lastSeenId.current) {
-    lastSeenId.current = leadId;
-    setNotes(lead.notes);
-    setDate(lead.next_call_date ?? "");
-    setTime(lead.next_call_time ?? "");
-  }
+  useEffect(() => {
+    if (lead) {
+      setNotes(lead.notes);
+      setDate(lead.next_call_date ?? "");
+      setTime(lead.next_call_time ?? "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [leadId]);
 
   if (!lead) return null;
 
@@ -60,7 +61,7 @@ export function LeadDetail({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) lastSeenId.current = null; }}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[92vh] overflow-y-auto">
         <div className="space-y-5">
           {/* Header */}
