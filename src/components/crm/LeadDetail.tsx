@@ -201,8 +201,6 @@ export function LeadDetail({
   );
 }
 
-const lastSeenId = { current: null as string | null };
-
 function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-border bg-muted/20 p-4">
