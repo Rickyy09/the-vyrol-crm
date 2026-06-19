@@ -298,16 +298,29 @@ export function pipelineFromResult(r: CallResult): PipelineStatus {
   }
 }
 
+export function isSafeUrl(url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "http:" || protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 export function parseGmbLink(url: string): Partial<Lead> {
   // Best-effort name extraction from Google Maps URL: /place/<Name>/...
-  const out: Partial<Lead> = { google_maps_url: url };
-  try {
-    const m = url.match(/\/place\/([^/]+)/);
-    if (m) {
-      out.business_name = decodeURIComponent(m[1]).replace(/\+/g, " ");
+  const out: Partial<Lead> = {};
+  if (isSafeUrl(url)) {
+    out.google_maps_url = url;
+    try {
+      const m = url.match(/\/place\/([^/]+)/);
+      if (m) {
+        out.business_name = decodeURIComponent(m[1]).replace(/\+/g, " ");
+      }
+    } catch {
+      /* ignore */
     }
-  } catch {
-    /* ignore */
   }
   return out;
 }
