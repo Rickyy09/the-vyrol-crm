@@ -89,11 +89,11 @@ export function LeadDetail({
               {lead.phone && (
                 <Button asChild size="sm" className="gradient-brand text-white"><a href={`tel:${lead.phone}`}><Phone className="mr-1.5 h-3.5 w-3.5"/>Call</a></Button>
               )}
-              {lead.website_url && (
-                <Button asChild size="sm" variant="outline"><a href={lead.website_url} target="_blank" rel="noreferrer"><Globe className="mr-1.5 h-3.5 w-3.5"/>Website</a></Button>
+              {isSafeUrl(lead.website_url) && (
+                <Button asChild size="sm" variant="outline"><a href={lead.website_url} target="_blank" rel="noreferrer noopener"><Globe className="mr-1.5 h-3.5 w-3.5"/>Website</a></Button>
               )}
-              {lead.google_maps_url && (
-                <Button asChild size="sm" variant="outline"><a href={lead.google_maps_url} target="_blank" rel="noreferrer"><MapPin className="mr-1.5 h-3.5 w-3.5"/>Maps</a></Button>
+              {isSafeUrl(lead.google_maps_url) && (
+                <Button asChild size="sm" variant="outline"><a href={lead.google_maps_url} target="_blank" rel="noreferrer noopener"><MapPin className="mr-1.5 h-3.5 w-3.5"/>Maps</a></Button>
               )}
               {lead.phone && (
                 <Button size="sm" variant="outline" onClick={() => { navigator.clipboard.writeText(lead.phone); toast.success("Copied"); }}>

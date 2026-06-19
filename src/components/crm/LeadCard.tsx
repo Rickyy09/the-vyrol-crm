@@ -1,7 +1,7 @@
 import { Star, Phone, Globe, MapPin, Archive } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import type { Lead } from "@/lib/crm-store";
+import { type Lead, isSafeUrl } from "@/lib/crm-store";
 
 const wqColor: Record<string, string> = {
   bad: "bg-destructive/15 text-destructive border-destructive/30",
@@ -92,9 +92,9 @@ export function LeadCard({
             <a href={`tel:${lead.phone}`}><Phone className="mr-1 h-3 w-3" /> Call</a>
           </Button>
         )}
-        {lead.website_url && (
+        {isSafeUrl(lead.website_url) && (
           <Button asChild size="sm" variant="outline" className="h-7 text-xs" onClick={(e) => e.stopPropagation()}>
-            <a href={lead.website_url} target="_blank" rel="noreferrer"><Globe className="h-3 w-3" /></a>
+            <a href={lead.website_url} target="_blank" rel="noreferrer noopener"><Globe className="h-3 w-3" /></a>
           </Button>
         )}
         <Button
