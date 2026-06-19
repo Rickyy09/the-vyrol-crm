@@ -12,6 +12,7 @@ import {
   type CallResult,
   type Lead,
   type PipelineStatus,
+  isSafeUrl,
 } from "@/lib/crm-store";
 import { Phone, Globe, MapPin, Copy, Archive, Star, Calendar as CalendarIcon } from "lucide-react";
 import { toast } from "sonner";
