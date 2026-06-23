@@ -4,13 +4,16 @@ import {
   createRootRouteWithContext,
   HeadContent,
   Scripts,
+  useRouterState,
+  useNavigate,
 } from "@tanstack/react-router";
-import { type ReactNode } from "react";
+import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { CrmProvider } from "@/lib/crm-store";
 import { AppLayout } from "@/components/crm/AppLayout";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider, useAuth } from "@/hooks/use-auth";
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -69,12 +72,47 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <CrmProvider>
-        <AppLayout>
-          <Outlet />
-        </AppLayout>
+      <AuthProvider>
+        <AuthGate>
+          <CrmProvider>
+            <ShellSwitch />
+          </CrmProvider>
+        </AuthGate>
         <Toaster position="top-right" />
-      </CrmProvider>
+      </AuthProvider>
     </QueryClientProvider>
+  );
+}
+
+function AuthGate({ children }: { children: ReactNode }) {
+  const { user, loading } = useAuth();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const nav = useNavigate();
+  const isAuthRoute = pathname === "/auth";
+
+  useEffect(() => {
+    if (loading) return;
+    if (!user && !isAuthRoute) nav({ to: "/auth", replace: true });
+  }, [loading, user, isAuthRoute, nav]);
+
+  if (loading) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-muted-foreground text-sm">
+        Loading…
+      </div>
+    );
+  }
+
+  if (!user && !isAuthRoute) return null;
+  return <>{children}</>;
+}
+
+function ShellSwitch() {
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  if (pathname === "/auth") return <Outlet />;
+  return (
+    <AppLayout>
+      <Outlet />
+    </AppLayout>
   );
 }
