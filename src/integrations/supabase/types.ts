@@ -14,7 +14,188 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      call_logs: {
+        Row: {
+          call_date: string
+          call_notes: string
+          call_result: string
+          created_at: string
+          id: string
+          lead_id: string | null
+          user_id: string
+        }
+        Insert: {
+          call_date?: string
+          call_notes?: string
+          call_result: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          user_id: string
+        }
+        Update: {
+          call_date?: string
+          call_notes?: string
+          call_result?: string
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_logs_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      daily_goals: {
+        Row: {
+          calls_made: number
+          created_at: string
+          date: string
+          goal_amount: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          calls_made?: number
+          created_at?: string
+          date: string
+          goal_amount?: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          calls_made?: number
+          created_at?: string
+          date?: string
+          goal_amount?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          address: string
+          archived: boolean
+          archived_at: string | null
+          business_name: string
+          category: string
+          created_at: string
+          google_maps_url: string
+          id: string
+          last_contacted_at: string | null
+          lead_quality: string
+          next_call_date: string | null
+          next_call_time: string | null
+          notes: string
+          phone: string
+          pipeline_status: string
+          rating: number | null
+          review_count: number | null
+          updated_at: string
+          user_id: string
+          website_quality: string
+          website_url: string
+        }
+        Insert: {
+          address?: string
+          archived?: boolean
+          archived_at?: string | null
+          business_name?: string
+          category?: string
+          created_at?: string
+          google_maps_url?: string
+          id?: string
+          last_contacted_at?: string | null
+          lead_quality?: string
+          next_call_date?: string | null
+          next_call_time?: string | null
+          notes?: string
+          phone?: string
+          pipeline_status?: string
+          rating?: number | null
+          review_count?: number | null
+          updated_at?: string
+          user_id: string
+          website_quality?: string
+          website_url?: string
+        }
+        Update: {
+          address?: string
+          archived?: boolean
+          archived_at?: string | null
+          business_name?: string
+          category?: string
+          created_at?: string
+          google_maps_url?: string
+          id?: string
+          last_contacted_at?: string | null
+          lead_quality?: string
+          next_call_date?: string | null
+          next_call_time?: string | null
+          notes?: string
+          phone?: string
+          pipeline_status?: string
+          rating?: number | null
+          review_count?: number | null
+          updated_at?: string
+          user_id?: string
+          website_quality?: string
+          website_url?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          default_goal: number
+          google_places_api_key: string
+          theme: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          default_goal?: number
+          google_places_api_key?: string
+          theme?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          default_goal?: number
+          google_places_api_key?: string
+          theme?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
