@@ -271,7 +271,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
       const { error } = await supabase.from("call_logs").insert(row);
       if (error) toast.error("Failed to log call");
       if (lead_id) {
-        const patch: Record<string, unknown> = { last_contacted_at: now, updated_at: now };
+        const patch: Partial<Lead> = { last_contacted_at: now, updated_at: now };
         if (clear_next_call) patch.next_call_date = null;
         else if (next_call_date !== undefined) patch.next_call_date = next_call_date;
         await supabase.from("leads").update(patch).eq("id", lead_id);
