@@ -80,9 +80,9 @@ function Dashboard() {
         <StatRow label="My calls today" value={myCalls} accent />
         {others.map((p) => (
           <StatRow
-            key={p.id}
+            key={p.user_id}
             label={`${emailUsername(p.email)} calls today`}
-            value={callsByUser.get(p.id) ?? 0}
+            value={Number(p.call_count)}
           />
         ))}
         <StatRow label="Combined total today" value={combinedTotal} bold />
