@@ -182,6 +182,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         supabase
           .from("call_logs")
           .select("*")
+          .eq("user_id", userId)
           .gte("call_date", startOfDay)
           .order("call_date", { ascending: false })
           .then(({ data }) => {
