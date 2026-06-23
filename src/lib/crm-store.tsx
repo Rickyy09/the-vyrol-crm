@@ -141,8 +141,8 @@ export function CrmProvider({ children }: { children: ReactNode }) {
 
     const [leadsRes, callsRes, profilesRes, goalRes, settingsRes] = await Promise.all([
       supabase.from("leads").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
-      supabase.from("call_logs").select("*").gte("call_date", startOfDay).order("call_date", { ascending: false }),
-      supabase.from("profiles").select("id, email"),
+      supabase.from("call_logs").select("*").eq("user_id", userId).gte("call_date", startOfDay).order("call_date", { ascending: false }),
+      supabase.from("profiles").select("id, email").eq("id", userId),
       supabase.from("daily_goals").select("*").eq("user_id", userId).eq("date", today).maybeSingle(),
       supabase.from("user_settings").select("*").eq("user_id", userId).maybeSingle(),
     ]);
@@ -182,6 +182,7 @@ export function CrmProvider({ children }: { children: ReactNode }) {
         supabase
           .from("call_logs")
           .select("*")
+          .eq("user_id", userId)
           .gte("call_date", startOfDay)
           .order("call_date", { ascending: false })
           .then(({ data }) => {

@@ -32,16 +32,28 @@ function Dashboard() {
     .sort((a, b) => (a.next_call_date! < b.next_call_date! ? -1 : 1))
     .slice(0, 10);
 
-  // Per-user stats from today's call_logs (state.calls already covers all users today)
-  const callsByUser = useMemo(() => {
-    const map = new Map<string, number>();
-    for (const c of state.calls) map.set(c.user_id, (map.get(c.user_id) ?? 0) + 1);
-    return map;
-  }, [state.calls]);
+  // Per-user team stats today (via SECURITY DEFINER RPC; raw rows are private)
+  const [teamToday, setTeamToday] = useState<{ user_id: string; email: string; call_count: number }[]>([]);
+  const [leaderboard, setLeaderboard] = useState<{ user_id: string; email: string; call_count: number }[]>([]);
 
-  const myCalls = user ? callsByUser.get(user.id) ?? 0 : 0;
-  const others = state.profiles.filter((p) => p.id !== user?.id);
-  const combinedTotal = Array.from(callsByUser.values()).reduce((a, b) => a + b, 0);
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const [todayRes, allRes] = await Promise.all([
+        supabase.rpc("get_team_today_call_counts"),
+        supabase.rpc("get_team_alltime_call_counts"),
+      ]);
+      if (cancelled) return;
+      if (todayRes.data) setTeamToday(todayRes.data as typeof teamToday);
+      if (allRes.data) setLeaderboard(allRes.data as typeof leaderboard);
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [state.calls.length, state.leads.length]);
+
+  const myCalls = user ? (teamToday.find((r) => r.user_id === user.id)?.call_count ?? 0) : 0;
+  const others = teamToday.filter((p) => p.user_id !== user?.id);
+  const combinedTotal = teamToday.reduce((a, b) => a + Number(b.call_count), 0);
 
   const todayCalls = user ? state.calls.filter((c) => c.user_id === user.id) : [];
   const leadsToday = state.leads.filter((l) => l.created_at.slice(0, 10) === today).length;
@@ -49,26 +61,8 @@ function Dashboard() {
   const callbacksToday = todayCalls.filter((c) => c.call_result === "call_back").length;
   const noAnswersToday = todayCalls.filter((c) => c.call_result === "no_answer").length;
 
-  // All-time leaderboard
-  const [leaderboard, setLeaderboard] = useState<{ user_id: string; count: number }[]>([]);
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data } = await supabase.from("call_logs").select("user_id");
-      if (cancelled || !data) return;
-      const tally = new Map<string, number>();
-      for (const row of data) tally.set(row.user_id, (tally.get(row.user_id) ?? 0) + 1);
-      setLeaderboard(
-        Array.from(tally.entries())
-          .map(([user_id, count]) => ({ user_id, count }))
-          .sort((a, b) => b.count - a.count),
-      );
-    })();
-    return () => { cancelled = true; };
-  }, [state.calls.length]);
-
   const profileEmail = (id: string) =>
-    state.profiles.find((p) => p.id === id)?.email ?? null;
+    leaderboard.find((p) => p.user_id === id)?.email ?? null;
 
   return (
     <div className="space-y-6">
@@ -86,9 +80,9 @@ function Dashboard() {
         <StatRow label="My calls today" value={myCalls} accent />
         {others.map((p) => (
           <StatRow
-            key={p.id}
+            key={p.user_id}
             label={`${emailUsername(p.email)} calls today`}
-            value={callsByUser.get(p.id) ?? 0}
+            value={Number(p.call_count)}
           />
         ))}
         <StatRow label="Combined total today" value={combinedTotal} bold />
@@ -132,7 +126,7 @@ function Dashboard() {
                     <span className="font-medium">{emailUsername(profileEmail(row.user_id))}</span>
                     {row.user_id === user?.id && <span className="text-[10px] text-primary">(you)</span>}
                   </div>
-                  <span className="font-display tabular-nums gradient-text">{row.count}</span>
+                  <span className="font-display tabular-nums gradient-text">{Number(row.call_count)}</span>
                 </li>
               ))}
             </ul>

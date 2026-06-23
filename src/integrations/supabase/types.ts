@@ -201,7 +201,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_team_alltime_call_counts: {
+        Args: never
+        Returns: {
+          call_count: number
+          email: string
+          user_id: string
+        }[]
+      }
+      get_team_today_call_counts: {
+        Args: never
+        Returns: {
+          call_count: number
+          email: string
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
