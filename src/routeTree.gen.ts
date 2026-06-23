@@ -13,6 +13,7 @@ import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SaveLeadRouteImport } from './routes/save-lead'
 import { Route as PipelineRouteImport } from './routes/pipeline'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ArchiveRouteImport } from './routes/archive'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const CalendarRoute = CalendarRouteImport.update({
   path: '/calendar',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArchiveRoute = ArchiveRouteImport.update({
   id: '/archive',
   path: '/archive',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
   '/pipeline': typeof PipelineRoute
   '/save-lead': typeof SaveLeadRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
   '/pipeline': typeof PipelineRoute
   '/save-lead': typeof SaveLeadRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/archive': typeof ArchiveRoute
+  '/auth': typeof AuthRoute
   '/calendar': typeof CalendarRoute
   '/pipeline': typeof PipelineRoute
   '/save-lead': typeof SaveLeadRoute
@@ -77,16 +86,25 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/archive'
+    | '/auth'
     | '/calendar'
     | '/pipeline'
     | '/save-lead'
     | '/settings'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/archive' | '/calendar' | '/pipeline' | '/save-lead' | '/settings'
+  to:
+    | '/'
+    | '/archive'
+    | '/auth'
+    | '/calendar'
+    | '/pipeline'
+    | '/save-lead'
+    | '/settings'
   id:
     | '__root__'
     | '/'
     | '/archive'
+    | '/auth'
     | '/calendar'
     | '/pipeline'
     | '/save-lead'
@@ -96,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArchiveRoute: typeof ArchiveRoute
+  AuthRoute: typeof AuthRoute
   CalendarRoute: typeof CalendarRoute
   PipelineRoute: typeof PipelineRoute
   SaveLeadRoute: typeof SaveLeadRoute
@@ -132,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CalendarRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/archive': {
       id: '/archive'
       path: '/archive'
@@ -152,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArchiveRoute: ArchiveRoute,
+  AuthRoute: AuthRoute,
   CalendarRoute: CalendarRoute,
   PipelineRoute: PipelineRoute,
   SaveLeadRoute: SaveLeadRoute,
@@ -160,13 +187,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

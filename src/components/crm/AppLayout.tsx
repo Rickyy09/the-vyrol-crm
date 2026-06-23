@@ -1,10 +1,12 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
 import { type ReactNode, useState } from "react";
-import { LayoutDashboard, Columns3, Calendar, UserPlus, Archive, Settings, Menu, PhoneCall, X } from "lucide-react";
+import { LayoutDashboard, Columns3, Calendar, UserPlus, Archive, Settings, Menu, PhoneCall, X, LogOut } from "lucide-react";
 import { Logo, LogoMark } from "./Logo";
 import { DailyTracker } from "./DailyTracker";
 import { Button } from "@/components/ui/button";
 import { CallCompletedModal } from "./CallCompletedModal";
+import { useAuth } from "@/hooks/use-auth";
+import { emailUsername } from "@/lib/crm-store";
 
 const nav: { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean }[] = [
   { to: "/", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -19,6 +21,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [mobileOpen, setMobileOpen] = useState(false);
   const [callOpen, setCallOpen] = useState(false);
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate({ to: "/auth", replace: true });
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -47,10 +56,19 @@ export function AppLayout({ children }: { children: ReactNode }) {
             );
           })}
         </nav>
-        <div className="p-4">
+        <div className="space-y-2 p-4">
           <Button className="gradient-brand w-full text-white" onClick={() => setCallOpen(true)}>
             <PhoneCall className="mr-2 h-4 w-4" /> Call Completed
           </Button>
+          {user && (
+            <div className="rounded-lg border border-border bg-card/40 px-3 py-2">
+              <div className="text-[10px] uppercase text-muted-foreground">Signed in</div>
+              <div className="truncate text-xs font-medium">{emailUsername(user.email)}</div>
+              <Button variant="ghost" size="sm" className="mt-1 h-7 w-full justify-start px-2 text-xs" onClick={handleSignOut}>
+                <LogOut className="mr-2 h-3 w-3" /> Sign out
+              </Button>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -84,13 +102,21 @@ export function AppLayout({ children }: { children: ReactNode }) {
                 );
               })}
             </nav>
+            {user && (
+              <div className="mt-4 rounded-lg border border-border bg-card/40 px-3 py-2">
+                <div className="text-[10px] uppercase text-muted-foreground">Signed in</div>
+                <div className="truncate text-xs font-medium">{emailUsername(user.email)}</div>
+                <Button variant="ghost" size="sm" className="mt-1 h-7 w-full justify-start px-2 text-xs" onClick={handleSignOut}>
+                  <LogOut className="mr-2 h-3 w-3" /> Sign out
+                </Button>
+              </div>
+            )}
           </aside>
         </div>
       )}
 
       {/* Main */}
       <div className="lg:pl-60">
-        {/* Top bar with tracker */}
         <header className="sticky top-0 z-30 border-b border-border bg-background/80 backdrop-blur-lg">
           <div className="flex items-center gap-2 px-4 py-3 lg:px-8">
             <Button size="icon" variant="ghost" className="lg:hidden" onClick={() => setMobileOpen(true)}>
@@ -105,6 +131,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
               </div>
               <Button className="gradient-brand text-white" size="sm" onClick={() => setCallOpen(true)}>
                 <PhoneCall className="mr-1.5 h-4 w-4" /> Call Done
+              </Button>
+              <Button size="icon" variant="ghost" className="hidden lg:inline-flex" onClick={handleSignOut} title="Sign out">
+                <LogOut className="h-4 w-4" />
               </Button>
             </div>
           </div>

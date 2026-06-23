@@ -55,16 +55,16 @@ export function SaveLeadForm({
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.business_name.trim()) return;
-    const lead = saveLead({
+    const lead = await saveLead({
       ...form,
       rating: form.rating ? Number(form.rating) : null,
       review_count: form.review_count ? Number(form.review_count) : null,
       next_call_date: form.next_call_date || null,
       next_call_time: form.next_call_time || null,
     });
-    onSaved(lead.id);
+    if (lead) onSaved(lead.id);
   };
 
   return (
