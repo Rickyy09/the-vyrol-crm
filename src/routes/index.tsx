@@ -126,7 +126,7 @@ function Dashboard() {
                     <span className="font-medium">{emailUsername(profileEmail(row.user_id))}</span>
                     {row.user_id === user?.id && <span className="text-[10px] text-primary">(you)</span>}
                   </div>
-                  <span className="font-display tabular-nums gradient-text">{row.count}</span>
+                  <span className="font-display tabular-nums gradient-text">{Number(row.call_count)}</span>
                 </li>
               ))}
             </ul>
